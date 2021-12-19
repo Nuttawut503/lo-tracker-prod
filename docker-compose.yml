@@ -33,8 +33,6 @@ services:
       # - logstash
       - redis
       - db
-    ports:
-    - 8080:8080
     networks:
     - api
     #- logging
@@ -45,7 +43,7 @@ services:
       context: .
       dockerfile: dockerfile.nextjs
     depends_on:
-      - server
+    - server
     networks:
     - webproxy
     - api
@@ -54,9 +52,9 @@ services:
       context: .
       dockerfile: dockerfile.nginx
     depends_on:
-      - nextjs
+    - nextjs
     ports:
-    - "80:80"
+    - 80:80
     networks:
     - webproxy
 networks:

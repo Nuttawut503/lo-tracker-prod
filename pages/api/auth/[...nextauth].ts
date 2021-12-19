@@ -25,7 +25,7 @@ export default NextAuth({
         password: { label: "password", type: "password", placeholder: "password" },
       },
       async authorize(credentials) {
-        const response = await fetch(`http://localhost:${process.env.API_PORT}/auth/login`, {
+        const response = await fetch(process.env.AUTH_URL, {
           method: 'POST',
           mode: 'cors',
           headers: {
