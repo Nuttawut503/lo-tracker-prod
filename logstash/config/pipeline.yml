@@ -1,0 +1,2 @@
+- pipeline.id: Logger
+  path.config: "${PWD}/pipeline/custom.logstash.conf"

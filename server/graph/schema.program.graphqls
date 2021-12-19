@@ -1,0 +1,67 @@
+type Program {
+  id: ID!
+  name: String!
+  description: String!
+  teacherID: String!
+}
+
+type PLOGroup {
+  id: ID!
+  name: String!
+}
+
+type PLO {
+  id: ID!
+  title: String!
+  description: String!
+  ploGroupID: String!
+}
+
+extend type Query {
+  programs: [Program!]!
+  program(programID: ID!): Program!
+  ploGroups(programID: ID!): [PLOGroup!]!
+  plos(ploGroupID: ID!): [PLO!]!
+  studentsInProgram(programID: ID!): [User!]!
+  students: [User!]!
+  student(studentID: ID!): User!
+}
+
+input CreateProgramInput {
+  name: String!
+  description: String!
+}
+
+input CreatePLOsInput {
+  title: String!
+  description: String!
+}
+
+input CreatePLOInput {
+  title: String!
+  description: String!
+}
+
+type deletePLOGroupResult {
+  id: ID!
+}
+
+type deletePLOResult {
+  id: ID!
+}
+
+type addPLOsResult {
+  id: ID!
+}
+
+extend type Mutation {
+  createProgram(input: CreateProgramInput!): Program!
+  editProgram(id: ID!, input: CreateProgramInput!): Program!
+  createPLOGroup(programID: ID!, name: String!, input: [CreatePLOsInput!]!): PLOGroup!
+  addPLOs(ploGroupID: ID!, input: [CreatePLOInput!]!): addPLOsResult!
+  editPLOGroup(id: ID!, name: String!): PLOGroup!
+  createPLO(ploGroupID: ID!, input: CreatePLOInput!): PLO!
+  editPLO(id: ID!, title: String!, description: String!): PLO!
+  deletePLOGroup(id: ID!): deletePLOGroupResult!
+  deletePLO(id: ID!): deletePLOResult!
+}

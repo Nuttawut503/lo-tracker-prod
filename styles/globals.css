@@ -1,3 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap');
+
 html,
 body {
   padding: 0;
@@ -13,4 +20,16 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.modal-open {
+  padding-right: 0 !important;
+}
+
+body {
+  font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+Link, Link > * {
+  cursor: pointer;
 }

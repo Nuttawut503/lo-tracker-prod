@@ -1,0 +1,153 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator db {
+  provider = "go run github.com/prisma/prisma-client-go"
+  output   = "server/db"
+}
+
+model User {
+  id      String @id
+  email   String
+  name    String
+  surname String
+
+  student Student?
+  teacher Teacher?
+}
+
+model Student {
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  id   String @id
+
+  questionResults QuestionResult[]
+}
+
+model Teacher {
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  id   String @id
+  role Int
+
+  programs Program[]
+  courses Course[]
+}
+
+model Program {
+  id          String @id @default(uuid())
+  name        String @unique
+  description String
+  teacher     Teacher? @relation(fields: [teacherID], references: [id], onDelete: SetNull)
+  teacherID   String?
+
+  ploGroups PLOgroup[]
+  courses   Course[]
+}
+
+model PLOgroup {
+  id        String  @id @default(uuid())
+  name      String
+  program   Program @relation(fields: [programID], references: [id], onDelete: Cascade)
+  programID String
+
+  plos    PLO[]
+  courses Course[]
+}
+
+model PLO {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  ploGroup    PLOgroup @relation(fields: [ploGroupID], references: [id], onDelete: Cascade)
+  ploGroupID  String
+
+  links LOlink[]
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  semester    Int
+  year        Int
+  program     Program  @relation(fields: [programID], references: [id], onDelete: Cascade)
+  programID   String
+  ploGroup    PLOgroup? @relation(fields: [ploGroupID], references: [id], onDelete: SetNull)
+  ploGroupID  String?
+  teacher     Teacher? @relation(fields: [teacherID], references: [id], onDelete: SetNull)
+  teacherID   String?
+
+  los     LO[]
+  quizzes Quiz[]
+}
+
+model LO {
+  id       String @id @default(uuid())
+  title    String
+  course   Course @relation(fields: [courseID], references: [id], onDelete: Cascade)
+  courseID String
+
+  levels LOlevel[]
+  links  LOlink[]
+}
+
+model LOlevel {
+  level       Int
+  description String
+  lo          LO     @relation(fields: [loID], references: [id], onDelete: Cascade)
+  loID        String
+
+  questionLinks QuestionLink[]
+  @@id([loID, level])
+}
+
+model LOlink {
+  lo    LO     @relation(fields: [loID], references: [id], onDelete: Cascade)
+  loID  String
+  plo   PLO    @relation(fields: [ploID], references: [id], onDelete: Cascade)
+  ploID String
+
+  @@id([loID, ploID])
+}
+
+model Quiz {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseID], references: [id], onDelete: Cascade)
+  courseID  String
+
+  questions Question[]
+}
+
+model Question {
+  id       String @id @default(uuid())
+  title    String
+  maxScore Int
+  quiz     Quiz   @relation(fields: [quizID], references: [id], onDelete: Cascade)
+  quizID   String
+
+  results QuestionResult[]
+  links   QuestionLink[]
+}
+
+model QuestionResult {
+  question   Question @relation(fields: [questionID], references: [id], onDelete: Cascade)
+  questionID String
+  student    Student  @relation(fields: [studentID], references: [id], onDelete: Cascade)
+  studentID  String
+  score      Int
+
+  @@id([questionID, studentID])
+}
+
+model QuestionLink {
+  question   Question @relation(fields: [questionID], references: [id], onDelete: Cascade)
+  questionID String
+  loLevel    LOlevel  @relation(fields: [loID, level], references: [loID, level], onDelete: Cascade)
+  loID       String
+  level      Int
+
+  @@id([questionID, loID, level])
+}

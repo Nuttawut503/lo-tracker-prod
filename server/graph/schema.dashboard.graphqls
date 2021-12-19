@@ -1,0 +1,107 @@
+type DashboardResult {
+  quizName: String!
+  maxScore: Int!
+  results: [DashboardResultSub!]!
+}
+
+type DashboardResultSub {
+  studentID: String!
+  studentName: String!
+  studentScore: Int!
+}
+
+type DashboardPLOSummary {
+  ploID: String!
+  loID: [String!]!
+}
+
+type DashboardFlat {
+  students: [User!]!
+  plos: [PLO!]!
+  los: [LO!]!
+  questions: [DashboardFlatQuestion!]!
+}
+
+type DashboardFlatQuestion {
+  title: String!
+  maxScore: Int!
+  linkedPLOs: [String!]!
+  linkedLOs: [String!]!
+  results: [DashboardFlatQuestionResult!]!
+}
+
+type DashboardFlatQuestionResult {
+  studentID: String!
+  studentScore: Int!
+}
+
+type DashboardIndividual {
+  ploGroups: [DashboardIndividualPLOGroup!]!
+  courses: [DashboardIndividualCourse!]!
+}
+
+type DashboardIndividualPLOGroup {
+  name: String!
+  plos: [DashboardIndividualPLO!]!
+}
+
+type DashboardIndividualPLO {
+  title: String!
+  description: String!
+  percentage: Float!
+}
+
+type DashboardIndividualCourse {
+  name: String!
+  semester: Int!
+  year: Int!
+  los: [DashboardIndividualCourseLO!]!
+  quizzes: [DashboardIndividualCourseQuiz!]!
+}
+
+type DashboardIndividualCourseLO {
+  id: ID!
+  title: String!
+  levels: [DashboardIndividualCourseLOLevel!]!
+  percentage: Float!
+}
+
+type DashboardIndividualCourseLOLevel {
+  level: Int!
+  description: String!
+}
+
+type DashboardIndividualCourseQuiz {
+  id: ID!
+  name: String!
+  maxScore: Int!
+  studentScore: Int!
+  los: [String!]!
+}
+
+type DashboardPLOGroup {
+  name: String!
+  plos: [DashboardPLOGroupDetail!]!
+  students: [User!]!
+}
+
+type DashboardPLOGroupDetail {
+  title: String!
+  description: String!
+  stats: DashboardPLOGroupDetailStats!
+}
+
+type DashboardPLOGroupDetailStats {
+  min: Float!
+  max: Float!
+  mean: Float!
+  median: Float!
+}
+
+extend type Query {
+  quizResults(courseID: ID!): [DashboardResult!]!
+  ploSummary(courseID: ID!): [DashboardPLOSummary!]!
+  flatSummary(courseID: ID!): DashboardFlat!
+  individualSummary(studentID: ID!): DashboardIndividual!
+  individualPLOGroupSummary(ploGroupID: ID!): DashboardPLOGroup!
+}

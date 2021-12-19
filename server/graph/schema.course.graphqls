@@ -1,0 +1,112 @@
+# https://gqlgen.com/getting-started/
+
+type Course {
+  id: ID!
+  name: String!
+  description: String!
+  semester: Int!
+  year: Int!
+  ploGroupID: String!
+  programID: String!
+  teacherID: String!
+}
+
+type LO {
+  id: ID!
+  title: String!
+  levels: [LOLevel!]!
+  ploLinks: [PLO!]!
+}
+
+type LOLevel {
+  level: Int!
+  description: String!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  surname: String!
+}
+
+type Query {
+  courses(programID: ID!): [Course!]!
+  course(courseID: ID!): Course!
+  los(courseID: ID!): [LO!]!
+  studentsInCourse(courseID: ID!): [User!]!
+}
+
+input CreateCourseInput {
+  name: String!
+  description: String!
+  semester: Int!
+  year: Int!
+  ploGroupID: String!
+}
+
+type DeleteCourseResult {
+  id: ID!
+}
+
+input CreateLOsInput {
+  title: String!
+  levels: [CreateLOLevelInput!]!
+}
+
+input CreateLOLevelInput {
+  level: Int!
+  description: String!
+}
+
+type CreateLOLinkResult {
+  loID: ID!
+  ploID: ID!
+}
+
+input CreateLOInput {
+  title: String!
+  level: Int!
+  description: String!
+}
+
+type CreateLOResult {
+  id: ID!
+}
+
+type EditLOResult {
+  id: ID!
+}
+
+type EditLOLevelResult {
+  id: ID!
+  level: Int!
+}
+
+type DeleteLOResult {
+  id: ID!
+}
+
+type DeleteLOLevelResult {
+  id: ID!
+}
+
+type DeleteLOLinkResult {
+  loID: ID!
+  ploID: ID!
+}
+
+type Mutation {
+  createCourse(programID: ID!, input: CreateCourseInput!): Course!
+  editCourse(id: ID!, input: CreateCourseInput!): Course!
+  deleteCourse(id: ID!): DeleteCourseResult!
+  createLOs(courseID: ID!, input: [CreateLOsInput!]!): [CreateLOResult!]!
+  editLO(id: ID!, title: String!): EditLOResult!
+  editLOLevel(id: ID!, level: Int!, description: String!): EditLOLevelResult!
+  createLOLink(loID: ID!, ploID: ID!): CreateLOLinkResult!
+  createLO(courseID: ID!, input: CreateLOInput!): CreateLOResult!
+  createLOLevel(loID: ID!, input: CreateLOLevelInput!): CreateLOResult!
+  deleteLO(id: ID!): DeleteLOResult!
+  deleteLOLevel(id: ID!, level: Int!): DeleteLOLevelResult!
+  deleteLOLink(loID: ID!, ploID: ID!): DeleteLOLinkResult!
+}

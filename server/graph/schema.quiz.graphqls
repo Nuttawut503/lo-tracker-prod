@@ -1,0 +1,90 @@
+scalar Time
+
+type Quiz {
+  id: ID!
+  name: String!
+  createdAt: Time!
+  questions: [Question!]!
+}
+
+type Question {
+  id: ID!
+  title: String!
+  maxScore: Int!
+  results: [QuestionResult!]!
+  loLinks: [QuestionLink!]!
+}
+
+type QuestionResult {
+  studentID: String!
+  score: Int!
+}
+
+type QuestionLink {
+  loID: ID!
+  level: Int!
+  description: String!
+}
+
+extend type Query {
+  quizzes(courseID: ID!): [Quiz!]!
+}
+
+input CreateQuizInput {
+  name: String!
+  createdAt: Time!
+  questions: [CreateQuestionInput!]!
+}
+
+input CreateQuestionInput {
+  title: String!
+  maxScore: Int!
+  results: [CreateQuestionResultInput!]!
+}
+
+input CreateQuestionResultInput {
+  studentID: String!
+  score: Int!
+}
+
+type CreateQuizResult {
+  id: ID!
+}
+
+input CreateQuestionLinkInput {
+  questionID: ID!
+  loID: ID!
+  level: Int!
+}
+
+type CreateQuestionLinkResult {
+  questionID: ID!
+  loID: ID!
+}
+
+type DeleteQuizResult {
+  id: ID!
+}
+
+input DeleteQuestionLinkInput {
+  questionID: ID!
+  loID: ID!
+  level: Int!
+}
+
+type DeleteQuestionLinkResult {
+  questionID: ID!
+  loID: ID!
+}
+
+type EditQuizResult {
+  id: ID!
+}
+
+extend type Mutation {
+  createQuiz(courseID: ID!, input: CreateQuizInput): CreateQuizResult!
+  createQuestionLink(input: CreateQuestionLinkInput): CreateQuestionLinkResult!
+  editQuiz(id: ID!, name: String!): EditQuizResult!
+  deleteQuiz(id: ID!): DeleteQuizResult!
+  deleteQuestionLink(input: DeleteQuestionLinkInput!): DeleteQuestionLinkResult!
+}
