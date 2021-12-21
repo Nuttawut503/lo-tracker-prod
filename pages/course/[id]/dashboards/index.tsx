@@ -15,7 +15,7 @@ import { CourseSubMenu, KnownCourseMainMenu } from 'components/Menu'
 import ProgramNameLink from 'components/ProgramAnchor'
 
 // path => /course/[id]/dashboards
-export default function Page({course, students, rawDashboardFlat, dashboardResults, rawDashboardPLOSummary}: PageProps) {
+export default function Page({ course, students, rawDashboardFlat, dashboardResults, rawDashboardPLOSummary }: PageProps) {
   const router = useRouter()
   const courseID = router.query.id as string
   const [state, setState] = useState<'Quiz' | 'Outcome'>('Quiz')
@@ -24,22 +24,22 @@ export default function Page({course, students, rawDashboardFlat, dashboardResul
       <title>Dashboard</title>
     </Head>
     <div>
-      <KnownCourseMainMenu programID={course.programID} courseID={course.id} courseName={course.name}/>
+      <KnownCourseMainMenu programID={course.programID} courseID={course.id} courseName={course.name} />
       {/* <NavHistory courseID = {courseID}/> */}
-      <CourseSubMenu courseID={course.id} selected={'dashboards'}/>
+      <CourseSubMenu courseID={course.id} selected={'dashboards'} />
       <div className="bg-white rounded-md p-3 w-100 shadow-md overflow-x-auto">
-      <ButtonTab>
-        <button onClick={() => setState("Quiz")} style={{marginRight: 5}}
-        className="border border-blue-500 rounded-md border-2">
-          {state === "Quiz" && <b>Quiz Score</b> || <span>Quiz Score</span>}
-        </button>
-        <button onClick={() => setState("Outcome")}
-        className="border border-blue-500 rounded-md border-2">
-          {state === "Outcome" && <b>Outcome Score</b> || <span>Outcome Score</span>}
-        </button>
-      </ButtonTab>
-      {state === "Quiz" && <ScoreTable courseID={course.id} students={students} dashboardResults={dashboardResults}/>}
-      {state === "Outcome" && <ScoreTablePLO courseID={course.id} dashboardFlat={parseDashboardFlat(rawDashboardFlat)} dashboardPLOSummary={parseDashboardPLOSummary(rawDashboardPLOSummary)}/>}
+        <ButtonTab>
+          <button onClick={() => setState("Quiz")} style={{ marginRight: 5 }}
+            className="border border-blue-500 rounded-md border-2">
+            {state === "Quiz" && <b>Quiz Score</b> || <span>Quiz Score</span>}
+          </button>
+          <button onClick={() => setState("Outcome")}
+            className="border border-blue-500 rounded-md border-2">
+            {state === "Outcome" && <b>Outcome Score</b> || <span>Outcome Score</span>}
+          </button>
+        </ButtonTab>
+        {state === "Quiz" && <ScoreTable courseID={course.id} students={students} dashboardResults={dashboardResults} />}
+        {state === "Outcome" && <ScoreTablePLO courseID={course.id} dashboardFlat={parseDashboardFlat(rawDashboardFlat)} dashboardPLOSummary={parseDashboardPLOSummary(rawDashboardPLOSummary)} />}
       </div>
     </div>
   </div>
@@ -52,25 +52,25 @@ interface CourseModel {
   programID: string
 }
 
-function NavHistory({courseID}: {courseID: string}) {
-  const {data, loading} = useQuery<{course: CourseModel}, {courseID: string}>(gql`
+function NavHistory({ courseID }: { courseID: string }) {
+  const { data, loading } = useQuery<{ course: CourseModel }, { courseID: string }>(gql`
     query Course($courseID: ID!) {
       course(courseID: $courseID) {
         id
         name
         programID
     }}
-  `, {variables: {courseID}})
+  `, { variables: { courseID } })
   if (loading) return <p></p>
   return (<p>
     <Link href="/">Home</Link>
     {' '}&#12297;{' '}
     <Link href="/programs">Programs</Link>
     {' '}&#12297;{' '}
-    <ProgramNameLink programID={data.course.programID} href={`/program/${data.course.programID}/courses`}/>
+    <ProgramNameLink programID={data.course.programID} href={`/program/${data.course.programID}/courses`} />
     {' '}&#12297;{' '}
     <Link href={`/course/${data.course.id}`}>{data.course.name}</Link>
-    
+
   </p>)
 }
 
@@ -91,37 +91,51 @@ interface PageProps {
 }
 
 export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
-  const { id: courseID } = context.params as Params
-  const client = initializeApollo(process.env.SSG_SECRET);
-  const GET_COURSE = gql`
+  try {
+    const { id: courseID } = context.params as Params
+    const client = initializeApollo(process.env.SSG_SECRET);
+    const GET_COURSE = gql`
     query CourseDescription($courseID: ID!) {
       course(courseID: $courseID) {
         id
         name
         programID
   }}`
-  const data = await Promise.all([
-    client.query<{course: CourseModel}, {courseID: string}>({
-      query: GET_COURSE,
-      variables: {
-        courseID
-      }
-    }),
-    getStudentProp(client, courseID),
-    getDashboardFlatRawProp(client, courseID),
-    getDashboardResultProp(client, courseID),
-    getDashboardPLOSummaryRawProp(client, courseID),
-  ])
-  return addApolloState(client, {
-    props: {
-      course: data[0].data.course,
-      students: data[1].result,
-      rawDashboardFlat: data[2].result,
-      dashboardResults: data[3].result,
-      rawDashboardPLOSummary: data[4].result,
-    },
-    revalidate: 60,
-  })
+    const data = await Promise.all([
+      client.query<{ course: CourseModel }, { courseID: string }>({
+        query: GET_COURSE,
+        variables: {
+          courseID
+        }
+      }),
+      getStudentProp(client, courseID),
+      getDashboardFlatRawProp(client, courseID),
+      getDashboardResultProp(client, courseID),
+      getDashboardPLOSummaryRawProp(client, courseID),
+    ])
+    return {
+      props: {
+        course: data[0].data.course,
+        students: data[1].result,
+        rawDashboardFlat: data[2].result,
+        dashboardResults: data[3].result,
+        rawDashboardPLOSummary: data[4].result,
+      },
+      revalidate: 60,
+    }
+  } catch {
+    return {
+      props: {
+        course: null,
+        students: [],
+        rawDashboardFlat: null,
+        dashboardResults: [],
+        rawDashboardPLOSummary: [],
+      },
+      revalidate: 5,
+    }
+  }
+
 }
 
 export const getStaticPaths: GetStaticPaths = CourseStaticPaths

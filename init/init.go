@@ -19,18 +19,25 @@ type Teacher struct {
 
 var teachers = []*Teacher{
 	{
-		ID:        "1234",
-		Email:     "abc@example.com",
-		Name:      "Ant",
-		Surname:   "Bird",
-		RoleLevel: 3,
+		ID:        "2001",
+		Email:     "tcher@example.com",
+		Name:      "Sample",
+		Surname:   "Teacher",
+		RoleLevel: 1,
 	},
 	{
-		ID:        "1235",
-		Email:     "def@example.com",
-		Name:      "Cat",
-		Surname:   "Dog",
+		ID:        "2002",
+		Email:     "pgmchair@example.com",
+		Name:      "Sample",
+		Surname:   "Program Chairperson",
 		RoleLevel: 2,
+	},
+	{
+		ID:        "2003",
+		Email:     "dev@example.com",
+		Name:      "Sample",
+		Surname:   "Developer",
+		RoleLevel: 3,
 	},
 }
 

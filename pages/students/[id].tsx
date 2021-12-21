@@ -2,7 +2,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import router from 'next/router'
 import { useEffect, useState, useRef, useContext } from 'react'
-import { OverlayTrigger, Table, Tooltip, Collapse} from 'react-bootstrap'
+import { OverlayTrigger, Table, Tooltip, Collapse } from 'react-bootstrap'
 import styled from 'styled-components'
 import { gql } from '@apollo/client'
 import { ParsedUrlQuery } from 'querystring'
@@ -11,22 +11,22 @@ import { initializeApollo, addApolloState } from 'libs/apollo-client'
 import { ChartBarPLO, ChartBarLO } from 'components/dashboards/plochart'
 import { AuthContext } from 'components/auth-wrapper'
 
-export default function Page({student, dashboard}: {student: StudentModel, dashboard: IndividualDashboard}) {
+export default function Page({ student, dashboard }: { student: StudentModel, dashboard: IndividualDashboard }) {
   const { isSignedIn, isTeacher, isSameUserID } = useContext(AuthContext)
   const [ploDataType, setPLOType] = useState("loading")
   function handleType(e: any) { setPLOType(e.target.value) }
-  const [chartData, setChart] = useState<studentResult>({studentID: student.id, studentName: student.name, scores: []})
+  const [chartData, setChart] = useState<studentResult>({ studentID: student.id, studentName: student.name, scores: [] })
   const [tableData, setData] = useState([])
   let plos = dashboard.ploGroups.slice()
   plos.sort((a, b) => a.name.localeCompare(b.name))
-  
+
   const ploRef = useRef(null)
   const loRef = useRef(null)
-  function scrollTo(ref: any){
-    ref.current.scrollIntoView()   
+  function scrollTo(ref: any) {
+    ref.current.scrollIntoView()
   }
-  
-  if(plos.length != 0 && ploDataType == "loading"){
+
+  if (plos.length != 0 && ploDataType == "loading") {
     setPLOType(plos[0].name)
   }
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function Page({student, dashboard}: {student: StudentModel, dashb
       chartData.scores.push(parseInt((targetPLOs.plos[i].percentage * 100 as number).toFixed(0)))
     }
     setChart(chartData)
-    
+
   }, [ploDataType, chartData, plos])
 
   if (!isSignedIn) return null
@@ -51,25 +51,25 @@ export default function Page({student, dashboard}: {student: StudentModel, dashb
     </Head>
     <div>
       <div className="flex justify-between">
-        <p style={{fontSize: 20}} ref={ploRef} onClick={() => scrollTo(ploRef)}>Program Learning Outcome Dashboard</p>
-        <button className="bg-white hover:bg-gray-400 px-2 border border-gray-400 rounded" 
-        onClick={() => scrollTo(loRef)} > &#8595;Go down</button>
+        <p style={{ fontSize: 20 }} ref={ploRef} onClick={() => scrollTo(ploRef)}>Program Learning Outcome Dashboard</p>
+        <button className="bg-white hover:bg-gray-400 px-2 border border-gray-400 rounded"
+          onClick={() => scrollTo(loRef)} > &#8595;Go down</button>
       </div>
       <div>
-      <BackButton onClick={() => {
-        if(isTeacher) router.back()
-        else router.replace('/')
+        <BackButton onClick={() => {
+          if (isTeacher) router.back()
+          else router.replace('/')
         }} className="text-xl">
-        &#12296;Back
-      </BackButton>
-      <h6>ID: {student.id}</h6>
-      <h6>Email: {student.email}</h6>
-      <h6>Name: {student.name} {student.surname}</h6>
-      </div><br/>
+          &#12296;Back
+        </BackButton>
+        <h6>ID: {student.id}</h6>
+        <h6>Email: {student.email}</h6>
+        <h6>Name: {student.name} {student.surname}</h6>
+      </div><br />
       <span>Select PLO Group to view: </span>
       <select value={ploDataType} onChange={handleType} className="border rounded-md border-2 ">
-        {plos.map((d, i) =>  (
-          <option key={`ploset`+i} value={d.name}>{d.name}</option>
+        {plos.map((d, i) => (
+          <option key={`ploset` + i} value={d.name}>{d.name}</option>
         ))}
       </select>
       <TableScrollDiv>
@@ -99,27 +99,27 @@ export default function Page({student, dashboard}: {student: StudentModel, dashb
           </tbody>
         </TableScrollable>
       </TableScrollDiv>
-      <ChartBarPLO data={chartData} scoreType={"Program Learning Outcome"} tableHead={tableData.map(d => d.title)}/>
+      <ChartBarPLO data={chartData} scoreType={"Program Learning Outcome"} tableHead={tableData.map(d => d.title)} />
     </div>
     <div>
-    <div className="flex justify-between">
-      <p style={{fontSize: 20}} ref={loRef} onClick={() => scrollTo(loRef)}>Learning Outcome Dashboard</p>
-      <button className="bg-white hover:bg-gray-400 px-2 border border-gray-400 rounded" 
-        onClick={() => scrollTo(ploRef)} > &#8593;Go up</button>
-    </div>
-    <LODashboard student={student} dashboard = {dashboard}/>
+      <div className="flex justify-between">
+        <p style={{ fontSize: 20 }} ref={loRef} onClick={() => scrollTo(loRef)}>Learning Outcome Dashboard</p>
+        <button className="bg-white hover:bg-gray-400 px-2 border border-gray-400 rounded"
+          onClick={() => scrollTo(ploRef)} > &#8593;Go up</button>
+      </div>
+      <LODashboard student={student} dashboard={dashboard} />
     </div>
   </div>
 }
 
-function LODashboard({student, dashboard}: {student: StudentModel, dashboard: IndividualDashboard}){
+function LODashboard({ student, dashboard }: { student: StudentModel, dashboard: IndividualDashboard }) {
   const [course, setCourse] = useState("loading")
   function handleType(e: any) { setCourse(e.target.value) }
-  const [chartData, setChart] = useState<studentResult>({studentID: student.id, studentName: student.name, scores: []})
+  const [chartData, setChart] = useState<studentResult>({ studentID: student.id, studentName: student.name, scores: [] })
   const [tableData, setData] = useState([])
   const [quizData, setQuiz] = useState([])
   const [show, setShows] = useState([])
-  function setShow(i: number){
+  function setShow(i: number) {
     show[i] = !show[i]
     setShows(show.slice())
   }
@@ -127,7 +127,7 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
   let courses = dashboard.courses.slice()
   courses.sort((a, b) => a.name.localeCompare(b.name))
 
-  if(dashboard.ploGroups.length != 0 && course == "loading"){
+  if (dashboard.ploGroups.length != 0 && course == "loading") {
     setCourse(courses[0].name)
   }
   useEffect(() => {
@@ -135,13 +135,13 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
     targetCourse.los.sort((a, b) => a.title.localeCompare(b.title))
     for (let i = 0; i < targetCourse.los.length; i++) {
       targetCourse.los[i].levels.sort((a: any, b: any) => {
-        if(a.level < b.level) return -1
-        if(a.level > b.level) return 1
+        if (a.level < b.level) return -1
+        if (a.level > b.level) return 1
         return 0
       })
     }
-  
-    setShows(Array.from({length: targetCourse.quizzes.length}, () => false))
+
+    setShows(Array.from({ length: targetCourse.quizzes.length }, () => false))
     setData(targetCourse.los.slice())
     setQuiz(targetCourse.quizzes.slice())
     chartData.scores = []
@@ -149,25 +149,25 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
       chartData.scores.push(parseInt((targetCourse.los[i].percentage * 100 as number).toFixed(0)))
     }
     setChart(chartData)
-    
+
   }, [course, chartData, courses])
   let LvlArray = []
-  function resetLoLvl(){ LvlArray = []}
-  function getLoName(id: string){
+  function resetLoLvl() { LvlArray = [] }
+  function getLoName(id: string) {
     LvlArray.push(tableData.find(e => e.id == id.split(',')[0]).levels.find(e => e.level == id.split(',')[1]).description)
   }
-  function showLoLvl(){
+  function showLoLvl() {
     const LvlArrays = Array.from(new Set(LvlArray))
     LvlArrays.sort((a, b) => a.localeCompare(b))
     return LvlArrays.map((d, i) => <p key={`lvl${i}`}>{d}</p>)
   }
 
-  return(
+  return (
     <div>
       <span>Select Course: </span>
       <select value={course} onChange={handleType} className="border rounded-md border-2 ">
-        {courses.map((d, i) =>  (
-          <option key={`ploset`+i} value={d.name}>{d.name}</option>
+        {courses.map((d, i) => (
+          <option key={`ploset` + i} value={d.name}>{d.name}</option>
         ))}
       </select>
       <TableScrollDiv>
@@ -180,12 +180,12 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
                 placement="right" overlay={
                   <Tooltip id={`tooltip${i}`}>
                     <b>LO Levels</b>
-                    {data.levels.map((lvl, i) => ( 
-                    <p key={`level${i}`}>{lvl.description}</p>
+                    {data.levels.map((lvl, i) => (
+                      <p key={`level${i}`}>{lvl.description}</p>
                     ))}
                   </Tooltip>
                 } key={`data${i}`}><th>
-                {data.title} (%)</th></OverlayTrigger>))}
+                  {data.title} (%)</th></OverlayTrigger>))}
             </tr>
           </thead>
           <tbody>
@@ -200,13 +200,13 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
         </TableScrollable>
       </TableScrollDiv>
       <div className="flex">
-        <div style={{minWidth: "50%", minHeight: "300px"}}>
+        <div style={{ minWidth: "50%", minHeight: "300px" }}>
           <p className="text-xl">Quiz Score</p>
           {quizData.map((d, i) => (
             <div key={`quiz${i}`}>
               <p>{d.name} : {d.studentScore} / {d.maxScore}</p>
-              <p onClick={() => setShow(i)}>Linked to {d.los.length} LO levels 
-                {show[i] === false? <span>&#11167;</span> : <span>&#11165;</span>}</p>
+              <p onClick={() => setShow(i)}>Linked to {d.los.length} LO levels
+                {show[i] === false ? <span>&#11167;</span> : <span>&#11165;</span>}</p>
               <Collapse in={show[i]}>
                 <div>
                   {resetLoLvl()}
@@ -220,56 +220,75 @@ function LODashboard({student, dashboard}: {student: StudentModel, dashboard: In
           ))}
         </div>
         <div>
-          <ChartBarLO data={chartData} scoreType={"Learning Outcome"} tableHead={tableData.map(d => d.title.substring(0, 4))}/>
+          <ChartBarLO data={chartData} scoreType={"Learning Outcome"} tableHead={tableData.map(d => d.title.substring(0, 4))} />
         </div>
       </div>
     </div>
   )
- 
+
 }
 
 interface PageParams extends ParsedUrlQuery {
   id: string
 }
 
-export const getStaticProps: GetStaticProps<{student: StudentModel, dashboard: IndividualDashboard}> = async (context) => {
-  const { id: studentID } = context.params as PageParams
+export const getStaticProps: GetStaticProps<{ student: StudentModel, dashboard: IndividualDashboard }> = async (context) => {
+  try {
+    const { id: studentID } = context.params as PageParams
   const client = initializeApollo(process.env.SSG_SECRET)
   const data = await Promise.all([
-    client.query<{student: StudentModel}, {studentID: string}>({
+    client.query<{ student: StudentModel }, { studentID: string }>({
       query: GET_STUDENT,
       variables: { studentID },
     }),
-    client.query<{individualSummary: IndividualDashboard}, {studentID: string}>({
+    client.query<{ individualSummary: IndividualDashboard }, { studentID: string }>({
       query: GET_DASHBOARD,
       variables: { studentID },
     }),
   ])
-  return addApolloState(client, {
+  return {
     props: {
       student: data[0].data.student,
       dashboard: data[1].data.individualSummary,
     },
     revalidate: 30,
-  })
+  }
+  }catch{
+    return {
+      props: {
+        student: undefined,
+        dashboard: null,
+      },
+      revalidate: 30,
+    }
+  }
+  
 }
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
-  const GET_STUDENTS = gql`
+  try {
+    const GET_STUDENTS = gql`
     query Students {
       students {
         id
   }}`
-  const client = initializeApollo(process.env.SSG_SECRET)
-  const { data } = await client.query<{students: StudentModel[]}>({
-    query: GET_STUDENTS,
-  })
-  return {
-    paths: data.students.map((student) => ({
-      params: {id: student.id}
-    })),
-    fallback: 'blocking',
+    const client = initializeApollo(process.env.SSG_SECRET)
+    const { data } = await client.query<{ students: StudentModel[] }>({
+      query: GET_STUDENTS,
+    })
+    return {
+      paths: data.students.map((student) => ({
+        params: { id: student.id }
+      })),
+      fallback: 'blocking',
+    }
+  } catch {
+    return {
+      paths: [],
+      fallback: 'blocking'
+    }
   }
+
 }
 
 interface StudentModel {

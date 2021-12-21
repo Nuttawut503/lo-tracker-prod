@@ -44,10 +44,10 @@ const CREATE_COURSE = gql`
       ploGroupID
 }}`
 
-export default function Page({programID, ploGroups}: {programID: string, ploGroups: PLOGroupModel[]}) {
-  const {isSignedIn, roleLevel} = useContext(AuthContext)
-  const [createCourse, { loading: submitting } ] = useMutation<{createCourse: CreateCourseResponse}, {programID: string, input: CreateCourseModel}>(CREATE_COURSE)
-  const { register, handleSubmit, reset, formState: {errors, touchedFields} } = useForm<CreateCourseModel>()
+export default function Page({ programID, ploGroups }: { programID: string, ploGroups: PLOGroupModel[] }) {
+  const { isSignedIn, roleLevel } = useContext(AuthContext)
+  const [createCourse, { loading: submitting }] = useMutation<{ createCourse: CreateCourseResponse }, { programID: string, input: CreateCourseModel }>(CREATE_COURSE)
+  const { register, handleSubmit, reset, formState: { errors, touchedFields } } = useForm<CreateCourseModel>()
   const router = useRouter()
   const submitForm = (form: CreateCourseModel) => {
     if (form.name !== '' && form.ploGroupID !== '') {
@@ -57,7 +57,7 @@ export default function Page({programID, ploGroups}: {programID: string, ploGrou
           input: form
         }
       }).then((res) => res.data.createCourse).then((course) => {
-        reset({name: ''})
+        reset({ name: '' })
         router.push(`/course/${course.id}`)
       })
     }
@@ -73,12 +73,12 @@ export default function Page({programID, ploGroups}: {programID: string, ploGrou
     <ProgramMainMenu programID={programID} />
     <div className="flex flex-col items-center gap-y-3">
       <p className="text-lg">Create a new course</p>
-      <form className="bg-white shadow-md rounded-md p-3" onSubmit={handleSubmit((form) => submitting || status === 'loading'? null: submitForm(form))}>
+      <form className="bg-white shadow-md rounded-md p-3" onSubmit={handleSubmit((form) => submitting || status === 'loading' ? null : submitForm(form))}>
         <span>Course name:</span>
         <br />
-        <input {...register('name', {required: true})} className="border-4 rounded-md p-1 mx-2 text-sm"/>
+        <input {...register('name', { required: true })} className="border-4 rounded-md p-1 mx-2 text-sm" />
         <br />
-        <span className="text-red-500 text-sm italic pl-3">{touchedFields.name && errors.name && 'Course name is required.'}</span><br/>
+        <span className="text-red-500 text-sm italic pl-3">{touchedFields.name && errors.name && 'Course name is required.'}</span><br />
 
         <span>Course description:</span>
         <br />
@@ -117,7 +117,7 @@ export default function Page({programID, ploGroups}: {programID: string, ploGrou
         </select>
         <br />
         <div className="text-right mt-3">
-          <input type="submit" value="create" className="py-2 px-4 bg-green-300 hover:bg-green-500 rounded-lg"/>
+          <input type="submit" value="create" className="py-2 px-4 bg-green-300 hover:bg-green-500 rounded-lg" />
         </div>
       </form>
     </div>
@@ -128,26 +128,37 @@ interface Params extends ParsedUrlQuery {
   id: string
 }
 
-export const getStaticProps: GetStaticProps<{programID: string, ploGroups: PLOGroupModel[]}> = async (context) => {
-  const GET_PLOGROUPS = gql`
+export const getStaticProps: GetStaticProps<{ programID: string, ploGroups: PLOGroupModel[] }> = async (context) => {
+  try {
+    const GET_PLOGROUPS = gql`
     query PLOGroups($programID: ID!) {
       ploGroups(programID: $programID) {
         id
         name
   }}`
-  const { id: programID } = context.params as Params
-  const client = initializeApollo(process.env.SSG_SECRET)
-  const { data } = await client.query<{ploGroups: PLOGroupModel[]}, {programID: string}>({
-    query: GET_PLOGROUPS,
-    variables: { programID }
-  })
-  return addApolloState(client, {
-    props: {
-      programID,
-      ploGroups: data.ploGroups
-    },
-    revalidate: 10,
-  })
+    const { id: programID } = context.params as Params
+    const client = initializeApollo(process.env.SSG_SECRET)
+    const { data } = await client.query<{ ploGroups: PLOGroupModel[] }, { programID: string }>({
+      query: GET_PLOGROUPS,
+      variables: { programID }
+    })
+    return {
+      props: {
+        programID,
+        ploGroups: data.ploGroups
+      },
+      revalidate: 10,
+    }
+  } catch {
+    return {
+      props: {
+        programID: undefined,
+        ploGroups: []
+      },
+      revalidate: 5,
+    }
+  }
+
 }
 
 export const getStaticPaths: GetStaticPaths = ProgramStaticPaths

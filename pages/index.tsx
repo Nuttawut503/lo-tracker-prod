@@ -14,7 +14,7 @@ export default function Index() {
     </Head>
     <div className="bg-white p-5 mt-5 rounded-md text-center">
     <div style={{ display: "inline-flex" }}>
-      <Image src={'kmutt1.jpg'} width={600} alt='kmutt'/>
+      <Image src={'kmutt1.jpg'} width={600} height={300} alt='kmutt'/>
       <div style={{margin: "auto", marginLeft: 100, textAlign: "center" }}>
       <Image src={'LogoFull.png'} width={250} height={150} alt='logo'/>
         {isSignedIn && <>

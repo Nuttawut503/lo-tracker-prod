@@ -65,7 +65,8 @@ interface Params extends ParsedUrlQuery {
 }
 
 export const getStaticProps: GetStaticProps<{course: CourseModel, students: StudentModel[]}> = async (context) => {
-  const { id: courseID } = context.params as Params
+  try {
+    const { id: courseID } = context.params as Params
   const GET_COURSE = gql`
     query CourseDescription($courseID: ID!) {
       course(courseID: $courseID) {
@@ -92,13 +93,23 @@ export const getStaticProps: GetStaticProps<{course: CourseModel, students: Stud
     query: GET_STUDENTS_IN_COURSE,
     variables: {courseID}
   })
-  return addApolloState(client, {
+  return  {
     props: {
       course,
       students: studentsInCourse
     },
     revalidate: 60,
-  })
+  }
+  }catch{
+    return {
+      props: {
+        course: null,
+        students: []
+      },
+      revalidate: 5,
+    }
+  }
+  
 }
 
 export const getStaticPaths: GetStaticPaths = CourseStaticPaths

@@ -13,7 +13,8 @@ interface CourseModel {
 }
 
 export const CourseStaticPaths: GetStaticPaths = async (context) => {
-  const GET_COURSES = gql`
+  try {
+    const GET_COURSES = gql`
     query Courses($programID: ID!) {
       courses(programID: $programID) {
         id
@@ -23,17 +24,24 @@ export const CourseStaticPaths: GetStaticPaths = async (context) => {
         year
         ploGroupID
   }}`
-  const client = initializeApollo(process.env.SSG_SECRET)
-  const { data } = await client.query<{courses: CourseModel[]}, {programID: string}>({
-    query: GET_COURSES,
-    variables: { programID: '' }
-  })
-  return {
-    paths: data.courses.map((course) => ({
-      params: {id: course.id}
-    })),
-    fallback: 'blocking',
+    const client = initializeApollo(process.env.SSG_SECRET)
+    const { data } = await client.query<{ courses: CourseModel[] }, { programID: string }>({
+      query: GET_COURSES,
+      variables: { programID: '' }
+    })
+    return {
+      paths: data.courses.map((course) => ({
+        params: { id: course.id }
+      })),
+      fallback: 'blocking',
+    }
+  } catch (error) {
+    return {
+      paths: [],
+      fallback: 'blocking'
+    }
   }
+
 }
 
 interface ProgramModel {
@@ -43,21 +51,28 @@ interface ProgramModel {
 }
 
 export const ProgramStaticPaths: GetStaticPaths = async (context) => {
-  const GET_PROGRAMS = gql`
+  try {
+    const GET_PROGRAMS = gql`
     query Programs {
       programs {
         id
         name
         description
   }}`
-  const client = initializeApollo(process.env.SSG_SECRET)
-  const { data } = await client.query<{programs: ProgramModel[]}>({
-    query: GET_PROGRAMS
-  })
-  return {
-    paths: data.programs.map((program) => ({
-      params: {id: program.id}
-    })),
-    fallback: 'blocking',
+    const client = initializeApollo(process.env.SSG_SECRET)
+    const { data } = await client.query<{ programs: ProgramModel[] }>({
+      query: GET_PROGRAMS
+    })
+    return {
+      paths: data.programs.map((program) => ({
+        params: { id: program.id }
+      })),
+      fallback: 'blocking',
+    }
+  } catch {
+    return {
+      paths: [],
+      fallback: 'blocking'
+    }
   }
 }
