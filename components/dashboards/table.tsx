@@ -52,7 +52,7 @@ export function ScoreTablePLO({courseID, dashboardFlat, dashboardPLOSummary: das
 
   useEffect(() => {
     calculatePLO()
-  }, [dashboardFlat, calculatePLO])
+  }, [dashboardFlat])
 
   function calculatePLO() {
     let score = dashboardFlat
@@ -225,7 +225,7 @@ export function ScoreTablePLO({courseID, dashboardFlat, dashboardPLOSummary: das
     }else{
       setHead(studentLOHead.slice());  setData(studentLOScore.slice())
     }
-  }, [dataType, studentLOHead, studentLOScore, studentPLOHead, studentPLOScore])
+  }, [dataType])
   return (<div className="flex">
       <div style={{minWidth: "52.5%", width: "52.5%", marginRight: "2%"}}>
       <br/>
@@ -280,7 +280,7 @@ export function ScoreTable({courseID, students, dashboardResults: dashboardQuiz}
 
   useEffect(() => {
     if (dashboardQuiz?.length > 0 && students.length > 0) displayScore()
-  }, [dashboardQuiz, students, displayScore])
+  }, [dashboardQuiz])
 
   function displayScore(){
     let score = dashboardQuiz

@@ -44,8 +44,16 @@ func init() {
 }
 
 func main() {
-	if err := client.Prisma.Connect(); err != nil {
-		panic(err)
+	i := 0
+	for {
+		err := client.Prisma.Connect()
+		if err == nil {
+			break
+		} else if i > 2 {
+			panic(err)
+		}
+		time.Sleep(5 * time.Second)
+		i++
 	}
 	defer func() {
 		if err := client.Prisma.Disconnect(); err != nil {
@@ -87,6 +95,10 @@ func main() {
 	r.Use(gin.Recovery())
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "http://nextjs:3000"}
+	config.AllowOriginFunc = func(origin string) bool {
+		log.Println(origin)
+		return true
+	}
 	config.AllowCredentials = true
 	config.AllowHeaders = append(config.AllowHeaders, "Authorization")
 	r.Use(cors.New(config))

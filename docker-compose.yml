@@ -1,15 +1,5 @@
 version: "3.9"
 services:
-  # logstash:
-  #   build:
-  #     context: .
-  #     dockerfile: dockerfile.logstash
-  #   networks:
-  #   - logging
-  redis:
-    image: redis
-    networks:
-    - tokensaving
   db:
     image: postgres
     environment:
@@ -22,7 +12,7 @@ services:
     volumes:
     - "./_data:/var/lib/postgresql/data/"
     ports:
-    - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    - "5432:5432"
     networks:
     - dbadmin
   server:
@@ -30,36 +20,12 @@ services:
       context: .
       dockerfile: dockerfile.golang
     depends_on:
-      # - logstash
-      - redis
       - db
-    networks:
-    - api
-    #- logging
-    - tokensaving
-    - dbadmin
-  nextjs:
-    build:
-      context: .
-      dockerfile: dockerfile.nextjs
-    depends_on:
-    - server
-    networks:
-    - webproxy
-    - api
-  nginx:
-    build:
-      context: .
-      dockerfile: dockerfile.nginx
-    depends_on:
-    - nextjs
     ports:
-    - 80:80
+    - "8080:8080"
     networks:
-    - webproxy
+    - api
+    - dbadmin
 networks:
-  webproxy:
   api:
-  #logging:
-  tokensaving:
   dbadmin:

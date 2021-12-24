@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
-import styled from 'styled-components'
-import * as d3 from 'd3'
+import { useEffect, useRef } from 'react';
+import * as d3 from "d3";
+import styled from 'styled-components';
 
 export interface studentResult {
   studentID: string,
@@ -9,12 +9,12 @@ export interface studentResult {
 }
 
 export function ChartBarPLO(props: { data: studentResult, scoreType: string, tableHead: string[] }) {
-  const ref = useRef()
-  const scoreType = props.scoreType
-  const tableHead = props.tableHead
+  const ref = useRef();
+  const scoreType = props.scoreType;
+  const tableHead = props.tableHead;
   //Scoring
   interface averageScore { name: string, score: number }
-  let datas = props.data
+  let datas = props.data;
   let avgScore: averageScore[] = [];
   for (let i = 0; i < datas.scores.length; i++){
     avgScore.push({name: tableHead[i], score: datas.scores[i] as number})
@@ -30,7 +30,7 @@ export function ChartBarPLO(props: { data: studentResult, scoreType: string, tab
 
   useEffect(() => {
     if (avgScore.length != 0) {
-      d3.selectAll("#chart1 > *").remove()
+      d3.selectAll("#chart1 > *").remove();
       const svgElement = d3.select(ref.current)
       let dataset = avgScore;
       //chart area
@@ -47,22 +47,22 @@ export function ChartBarPLO(props: { data: studentResult, scoreType: string, tab
       const xScale = d3.scaleBand()
         .range([0, boxW])
         .domain(tableHead)
-        .padding(0.2)
+        .padding(0.2);
       box.append("g")
         .attr("transform", "translate(0," + boxH + ")")
         .call(d3.axisBottom(xScale))
         .selectAll("text").style("text-anchor", "middle");
       const yScale = d3.scaleLinear()
         .domain([0, 100])
-        .range([boxH, 0])
+        .range([boxH, 0]);
       box.append("g")
-        .call(d3.axisLeft(yScale))
+        .call(d3.axisLeft(yScale));
 
       box.selectAll("rect")
         .data(dataset).enter().append('rect')
         .attr('width', xScale.bandwidth).attr('height', function (d) { return boxH - yScale(d.score); })
-        .attr("x", d => xScale(d.name))
-        .attr("y", d => yScale(d.score))
+        .attr("x", function (d) { return xScale(d.name); })
+        .attr("y", function (d) { return yScale(d.score); })
         .attr("fill", "#3033d3")
         .style("stroke-width", "0px").style("stroke", "black")
         .on('mouseover', mOverEvent)
@@ -111,7 +111,7 @@ export function ChartBarPLO(props: { data: studentResult, scoreType: string, tab
         tooltip.style('display', 'none')
       }
     }
-  }, [avgScore, boxH, boxW, dimensions.h, dimensions.margin.bottom, dimensions.margin.left, dimensions.margin.top, dimensions.w, scoreType, tableHead])
+  }, [avgScore])
 
   return <div >
       <svg ref={ref} style={{ display: "block", margin: "auto" }} id="chart1"></svg>
@@ -123,13 +123,13 @@ export function ChartBarPLO(props: { data: studentResult, scoreType: string, tab
 }
 
 export function ChartBarLO(props: { data: studentResult, scoreType: string, tableHead: string[] }) {
-  const reff = useRef()
-  const scoreType = props.scoreType
-  const tableHead = props.tableHead
+  const reff = useRef();
+  const scoreType = props.scoreType;
+  const tableHead = props.tableHead;
   //Scoring
   interface averageScore { name: string, score: number }
-  let datas = props.data
-  let avgScore: averageScore[] = []
+  let datas = props.data;
+  let avgScore: averageScore[] = [];
   for (let i = 0; i < datas.scores.length; i++){
     avgScore.push({name: tableHead[i], score: datas.scores[i] as number})
   }
@@ -143,9 +143,9 @@ export function ChartBarLO(props: { data: studentResult, scoreType: string, tabl
 
   useEffect(() => {
     if (avgScore.length != 0) {
-      d3.selectAll("#chart2 > *").remove()
+      d3.selectAll("#chart2 > *").remove();
       const svgElement = d3.select(reff.current)
-      let dataset = avgScore
+      let dataset = avgScore;
       //chart area
       svgElement.attr('width', dimensions.w).attr('height', dimensions.h)
         .style("background-color", "transparent")
@@ -160,22 +160,22 @@ export function ChartBarLO(props: { data: studentResult, scoreType: string, tabl
       const xScale = d3.scaleBand()
         .range([0, boxW])
         .domain(tableHead)
-        .padding(0.2)
+        .padding(0.2);
       box.append("g")
         .attr("transform", "translate(0," + boxH + ")")
         .call(d3.axisBottom(xScale))
-        .selectAll("text").style("text-anchor", "middle")
+        .selectAll("text").style("text-anchor", "middle");
       const yScale = d3.scaleLinear()
         .domain([0, 100])
-        .range([boxH, 0])
+        .range([boxH, 0]);
       box.append("g")
-        .call(d3.axisLeft(yScale))
+        .call(d3.axisLeft(yScale));
 
       box.selectAll("rect")
         .data(dataset).enter().append('rect')
         .attr('width', xScale.bandwidth).attr('height', function (d) { return boxH - yScale(d.score); })
-        .attr("x", d => xScale(d.name))
-        .attr("y", d => yScale(d.score))
+        .attr("x", function (d) { return xScale(d.name); })
+        .attr("y", function (d) { return yScale(d.score); })
         .attr("fill", "#0c7c1f")
         .style("stroke-width", "0px").style("stroke", "black")
         .on('mouseover', mOverEvent)
@@ -223,7 +223,7 @@ export function ChartBarLO(props: { data: studentResult, scoreType: string, tabl
         tooltip.style('display', 'none')
       }
     }
-  }, [avgScore, boxH, boxW, dimensions.h, dimensions.margin.bottom, dimensions.margin.left, dimensions.margin.top, dimensions.w, scoreType, tableHead])
+  }, [avgScore])
 
   return <div id="chartDiv">
       <svg ref={reff} style={{ display: "block", margin: "auto" }} id="chart2"></svg>
@@ -248,22 +248,22 @@ interface ploResult{
 }
 
 export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) {
-  const ref = useRef()
+  const ref = useRef();
   function toPercentage(n: number){ return parseInt((n * 100).toFixed(0)) }
   //scoring
-  let datas = props.data
-  const scoreType = props.scoreType
-  let allScore = [] // all student score graph
-  let allScoreTemp = []
+  let datas = props.data;
+  const scoreType = props.scoreType;
+  let allScore = []; // all student score graph
+  let allScoreTemp = [];
   for(var i in datas) {
-    allScoreTemp.push({title: datas[i].title})
-    allScoreTemp[i]['min'] = toPercentage(datas[i].stats.min)
-    allScoreTemp[i]['max'] = toPercentage(datas[i].stats.max)
-    allScoreTemp[i]['mean'] = toPercentage(datas[i].stats.mean)
-    allScoreTemp[i]['median'] = toPercentage(datas[i].stats.median)
+    allScoreTemp.push({title: datas[i].title});
+    allScoreTemp[i]['min'] = toPercentage(datas[i].stats.min);
+    allScoreTemp[i]['max'] = toPercentage(datas[i].stats.max);
+    allScoreTemp[i]['mean'] = toPercentage(datas[i].stats.mean);
+    allScoreTemp[i]['median'] = toPercentage(datas[i].stats.median);
   }
 
-  allScore = allScoreTemp.slice()
+  allScore = allScoreTemp.slice();
   //Charting
   let dimensions = {
     w: 550, h: 300,
@@ -274,9 +274,9 @@ export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) 
 
   useEffect(() => {
     if (allScore.length != 0) {
-      d3.selectAll("svg > *").remove()
+      d3.selectAll("svg > *").remove();
       const svgElement = d3.select(ref.current)
-      let dataset = allScore
+      let dataset = allScore;
       //chart area
       svgElement.attr('width', dimensions.w).attr('height', dimensions.h)
         .style("background-color", "transparent")
@@ -289,13 +289,13 @@ export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) 
 
       //scale
       // var groups = d3.map(dataset, function(d){return(d.studentName)}).keys()
-      var groups = allScore.map(d => d.title)
-      var subgroups = ['min', 'max', 'mean', 'median']
+      var groups = allScore.map(d => d.title);
+      var subgroups = ['min', 'max', 'mean', 'median'];
       // var subgroups = ['max', 'mean', 'median', 'min'];
       const xScale = d3.scaleBand()
         .domain(groups)
         .range([0, boxW])
-        .padding(0.2)
+        .padding(0.2);
       box.append("g").transition()
         .attr("transform", "translate(0," + boxH + ")")
         .call(d3.axisBottom(xScale).tickValues(xScale.domain().filter(function(d,i){ 
@@ -310,9 +310,9 @@ export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) 
         // .attr("transform", "translate(-25,15)rotate(-45)")
       const yScale = d3.scaleLinear()
         .domain([0, 100])
-        .range([boxH, 0])
+        .range([boxH, 0]);
       box.append("g").transition()
-        .call(d3.axisLeft(yScale))
+        .call(d3.axisLeft(yScale));
       const xSubGroup = d3.scaleBand()
         .domain(subgroups)
         .range([0, xScale.bandwidth()])
@@ -320,7 +320,7 @@ export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) 
       
       const color = d3.scaleOrdinal<any>()
         .domain(subgroups)
-        .range(d3.schemeDark2)
+        .range(d3.schemeDark2);
 
       box.append("g")
         .selectAll("g") // can use in svg instead
@@ -404,7 +404,7 @@ export function ChartBarPLOAll(props: { data: ploResult[], scoreType: string }) 
         tooltipMain.style('display','none')
       }
     }
-  }, [allScore, boxH, boxW, dimensions.h, dimensions.margin.bottom, dimensions.margin.left, dimensions.margin.top, dimensions.w, scoreType])
+  }, [allScore])
 
   return <div /*style={{position: "absolute", right: "1%", width: "40%", height: "60%", marginTop: "0.5%"}}*/>
     <div>

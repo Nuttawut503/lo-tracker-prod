@@ -1,6 +1,9 @@
-import { useEffect, useRef } from 'react'
-import * as d3 from 'd3'
-import styled from 'styled-components'
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
+import ClientOnly from '../ClientOnly';
+import * as d3 from "d3";
+import styled from 'styled-components';
 
 interface studentResult {
   studentID: string,
@@ -13,43 +16,43 @@ interface averageScore {
 }
 
 export function ChartBarCompare(props: { data: studentResult[], stdData: studentResult[], scoreType: string, tableHead: string[] }) {
-  const ref = useRef()
-  const scoreType = props.scoreType
-  const tableHead = props.tableHead
+  const ref = useRef();
+  const scoreType = props.scoreType;
+  const tableHead = props.tableHead;
   //scoring
-  let stdDatas = props.stdData
-  let datas = props.data
-  let avgScoreTemp: averageScore[] = []
-  let dataLength = 0
+  let stdDatas = props.stdData;
+  let datas = props.data;
+  let avgScoreTemp: averageScore[] = [];
+  let dataLength = 0;
   for (var i in datas) {
-    let ltemp = 0
+    let ltemp = 0;
     for (var j in datas[i].scores) { ltemp += 1; }
     if (ltemp > dataLength) { dataLength = ltemp; }
   }
   let avg = Array.from({ length: dataLength }, () => 0);
   for (let i = 0; i < datas.length; i++) {
     for (let j = 0; j < datas[i].scores.length; j++) {
-      let score = datas[i].scores[j] as number
+      let score = datas[i].scores[j] as number;
       if (!isNaN(score)) { // prevent nan
-        avg[j] += score
+        avg[j] += score;
       }
     }
   }
   for (let i = 0; i < avg.length; i++) {
     avg[i] = parseInt((avg[i] / datas.length).toFixed(0))
-    avgScoreTemp.push({ name: tableHead[i], avgScore: avg[i], stdScore: 20 })
+    avgScoreTemp.push({ name: tableHead[i], avgScore: avg[i], stdScore: 20 });
   }
   if (stdDatas.length !== 0) {
     for (let i = 0; i < avgScoreTemp.length; i++) {
-      avgScoreTemp[i]['stdScore'] = stdDatas[0].scores[i] as number
+      avgScoreTemp[i]['stdScore'] = stdDatas[0].scores[i] as number;
     }
   }
   if (stdDatas.length == 2) { // add compare
     for (let i = 0; i < avgScoreTemp.length; i++) {
-      avgScoreTemp[i]['compareScore'] = stdDatas[1].scores[i] as number
+      avgScoreTemp[i]['compareScore'] = stdDatas[1].scores[i] as number;
     }
   }
-  let avgScore = avgScoreTemp.slice()
+  let avgScore = avgScoreTemp.slice();
 
   let subgroupTemp = []
   if (datas.length != 0) {
@@ -71,9 +74,9 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
 
   useEffect(() => {
     if (avgScore.length != 0) {
-      d3.selectAll("#svg1 > *").remove()
+      d3.selectAll("#svg1 > *").remove();
       const svgElement = d3.select(ref.current)
-      let dataset = avgScore
+      let dataset = avgScore;
       //chart area
       svgElement.attr('width', dimensions.w).attr('height', dimensions.h)
         .style("background-color", "transparent")
@@ -86,12 +89,12 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
 
       //scale
       // var groups = d3.map(dataset, function(d){return(d.studentName)}).keys()
-      var groups = avgScore.map(d => d.name)
-      var subgroups = subgroupTemp.slice()
+      var groups = avgScore.map(d => d.name);
+      var subgroups = subgroupTemp.slice();
       const xScale = d3.scaleBand()
         .domain(groups)
         .range([0, boxW])
-        .padding(0.2)
+        .padding(0.2);
       box.append("g")
         .attr("transform", "translate(0," + boxH + ")")
         .call(d3.axisBottom(xScale).tickValues(xScale.domain().filter(function (d, i) {
@@ -101,9 +104,9 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
       // .attr("transform", "translate(-25,15)rotate(-45)")
       const yScale = d3.scaleLinear()
         .domain([0, 100])
-        .range([boxH, 0])
+        .range([boxH, 0]);
       box.append("g")
-        .call(d3.axisLeft(yScale))
+        .call(d3.axisLeft(yScale));
       const xSubGroup = d3.scaleBand()
         .domain(subgroups)
         .range([0, xScale.bandwidth()])
@@ -112,7 +115,7 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
         .domain(subgroups)
         .range(['#2ace40', '#5299d3', '#347432'])
 
-      var lab = d3.scaleLinear().interpolate(d3.interpolate).domain([0, 10, 21])
+      var lab = d3.scaleLinear().interpolate(d3.interpolate).domain([0, 10, 21]);
       box.append("g")
         .selectAll("g")
         .data(dataset).enter()
@@ -200,7 +203,7 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
         tooltipMain.style('display', 'none')
       }
     }
-  }, [avgScore, boxH, boxW, dimensions.h, dimensions.margin.bottom, dimensions.margin.left, dimensions.margin.top, dimensions.w, scoreType, subgroupTemp])
+  }, [avgScore])
 
   return (<div style={{ width: "65%", height: "50%", marginTop: "0.5%" }}>
     <div>
@@ -219,22 +222,22 @@ export function ChartBarCompare(props: { data: studentResult[], stdData: student
 }
 
 export function ChartPie(props: { stdData: studentResult[], scoreType: string, tableHead: string[] }) {
-  const ref = useRef()
-  const scoreType = props.scoreType
-  const tableHead = props.tableHead
-  const scoreDomain = []
-  let totalScore = 0
+  const ref = useRef();
+  const scoreType = props.scoreType;
+  const tableHead = props.tableHead;
+  const scoreDomain = [];
+  let totalScore = 0;
   //Scoring
   interface averageScore { name: string, score: number }
-  let datas = props.stdData; let dataLength = 0
-  let dataScore: averageScore[] = []
-  let ltemp = 0
+  let datas = props.stdData; let dataLength = 0;
+  let dataScore: averageScore[] = [];
+  let ltemp = 0;
   if(datas.length != 0){
-    let scores = datas[0].scores
+    let scores = datas[0].scores;
     for (var j in datas[0].scores) { ltemp +=1; } 
     if(ltemp > dataLength) { dataLength = ltemp;}
     for (let i = 0; i < scores.length; i++) {
-      dataScore.push({ name: tableHead[i], score: scores[i] as number })
+      dataScore.push({ name: tableHead[i], score: scores[i] as number });
       totalScore += scores[i] as number
       scoreDomain.push(tableHead[i])
     }
@@ -252,9 +255,9 @@ export function ChartPie(props: { stdData: studentResult[], scoreType: string, t
 
   useEffect(() => {
     if (dataScore.length != 0) {
-      d3.selectAll("#svg2 > *").remove()
+      d3.selectAll("#svg2 > *").remove();
       const svgElement = d3.select(ref.current)
-      let dataset = dataScore
+      let dataset = dataScore;
       //chart area
       svgElement.attr('width', dimensions.w).attr('height', dimensions.h)
         .style("background-color", "transparent")
@@ -303,7 +306,7 @@ export function ChartPie(props: { stdData: studentResult[], scoreType: string, t
             const posB: any = outerArc.centroid(d)
             const posC: any = outerArc.centroid(d);
             const midangle: any = d.startAngle + (d.endAngle - d.startAngle) / 2 
-            posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1)
+            posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1);
             return [posA, posB, posC] as any
           })
 
@@ -315,8 +318,8 @@ export function ChartPie(props: { stdData: studentResult[], scoreType: string, t
             .attr('transform', function(d) {
               var pos = outerArc.centroid(d);
               var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
-              pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1)
-              return 'translate(' + pos + ')'
+              pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+              return 'translate(' + pos + ')';
             })
             .style('text-anchor', function(d) {
               var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
@@ -324,7 +327,7 @@ export function ChartPie(props: { stdData: studentResult[], scoreType: string, t
             })
             
     }
-  }, [dataScore, dimensions.h, dimensions.margin.left, dimensions.margin.top, dimensions.w, radius, scoreDomain, scoreType, totalScore])
+  }, [dataScore])
 
   return <div>
     <svg ref={ref} id="svg2">

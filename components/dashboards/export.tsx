@@ -1,34 +1,37 @@
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Modal } from 'react-bootstrap'
-import styled from 'styled-components'
-import xlsx from 'xlsx'
+import Head from 'next/head';
+import router, { useRouter } from 'next/router';
+import ClientOnly from '../ClientOnly';
+import { Modal } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import xlsx from 'xlsx';
+import styled from 'styled-components';
 
 // path => /course/[id]/dashboards/export
 export default function Index() {
-  return <div>
+  return (<div>
     <Head>
       <title>Dashboard</title>
     </Head>
-    <ExportPage/>
-  </div>
-}
+    <ClientOnly>
+      <ExportPage/>
+    </ClientOnly>
+  </div>);
+};
 
 function ExportPage() {
-  const router = useRouter()
-  const {id: courseID} = router.query // extract id from router.query and rename to courseID
+  const router = useRouter();
+  const {id: courseID} = router.query; // extract id from router.query and rename to courseID
   return <div>
     Hello {courseID}
-  </div>
-}
+  </div>;
+};
 
 export interface StudentUpload {
-  studentID: string
-  studentEmail: string
-  studentName: string
-  studentSurname: string
+  studentID: string;
+  studentEmail: string;
+  studentName: string;
+  studentSurname: string;
 }
 
 interface studentResult {
@@ -38,15 +41,15 @@ interface studentResult {
 }
 
 export const ExportOutcome2: React.FC<{datas: studentResult[], head: string[]}> = ({datas, head}) => {
-  const [show, setShow] = useState(false)
-  const { register, handleSubmit, setValue } = useForm<{fileName: string, fileType: string}>()
+  const [show, setShow] = useState(false);
+  const { register, handleSubmit, setValue } = useForm<{fileName: string, fileType: string}>();
   
   useEffect(() => {
     if (!show) {
-      setValue('fileName', '')
-      setValue('fileType', 'xlsx')
+      setValue('fileName', '');
+      setValue('fileType', 'xlsx');
     }
-  }, [show, setValue])
+  }, [show]);
 
   return(
     <div style={{display: "inline", float:"right"}}>
@@ -86,36 +89,36 @@ export const ExportOutcome2: React.FC<{datas: studentResult[], head: string[]}> 
 }
 
 function exportExcel2(datas: studentResult[], head: string[], fileName: string, fileType: string) {
-  const wb = xlsx.utils.book_new()
+  const wb = xlsx.utils.book_new();
   let data:string[][] = [[...head],]
   if(fileName === ''){fileName = 'Outcome Result'}
   for (let i = 1; i < datas.length; i++) {
-    data.push([datas[i].studentID, datas[i].studentName])
+    data.push([datas[i].studentID, datas[i].studentName]);
     for (let j = 0; j < datas[i].scores.length; j++) {
-      data[i].push(datas[i].scores[j].toString())
+      data[i].push(datas[i].scores[j].toString());
       
     }
   }
-  const sheet = xlsx.utils.json_to_sheet([{}], {})
-  xlsx.utils.sheet_add_json(sheet, data, {origin: 'A3'})
+  const sheet = xlsx.utils.json_to_sheet([{}], {});
+  xlsx.utils.sheet_add_json(sheet, data, {origin: 'A3'});
   //quick fix to the blank row problem
-  delete_row(sheet,0);delete_row(sheet,0);delete_row(sheet,0)
-  xlsx.utils.book_append_sheet(wb, sheet)
-  xlsx.writeFile(wb, fileName + '.' + fileType, {bookType: fileType as xlsx.BookType })
+  delete_row(sheet,0);delete_row(sheet,0);delete_row(sheet,0);
+  xlsx.utils.book_append_sheet(wb, sheet);
+  xlsx.writeFile(wb, fileName + '.' + fileType, {bookType: fileType as xlsx.BookType });
 }
 
 function ec(r: any, c: any) {
-  return xlsx.utils.encode_cell({r: r, c: c})
+  return xlsx.utils.encode_cell({r: r, c: c});
 }
 function delete_row(ws: any, row_index: any) {
   var variable = xlsx.utils.decode_range(ws["!ref"])
   for (var R = row_index; R < variable.e.r; ++R) {
     for (var C = variable.s.c; C <= variable.e.c; ++C) {
-      ws[ec(R, C)] = ws[ec(R + 1, C)]
+      ws[ec(R, C)] = ws[ec(R + 1, C)];
     }
   }
   variable.e.r--
-  ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e)
+  ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
 }
 
 const OptionDiv = styled.div`

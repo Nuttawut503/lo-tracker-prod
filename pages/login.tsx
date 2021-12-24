@@ -38,11 +38,11 @@ export default function Page() {
     }).then(res => {
       if (res.error) throw res.error;
       toast('Singed In successfully, redirecting...', { type: 'success' })
-    }).catch(_ => toast(`Error: User not found`, { type: 'error' })).finally(() => setSubmitting(false))
+    }).catch(e => {toast(`Error: User not found`, { type: 'error' }); }).finally(() => setSubmitting(false))
   }
   return <div className="flex justify-center" style={{paddingTop: '10vh'}}>
     {!isSignedIn && <form onSubmit={handleSubmit(submitForm)} className="flex flex-column items-center gap-y-4 bg-white rounded-md shadow-md p-3">
-      <Image src={Logo} width="200" height="200" alt='logo'/>
+      <Image src={Logo} width="250" height="200" alt='logo'/>
       <div>
         <span>Username</span><br/>
         <input style={{width: '250px'}} {...register('username', {required: true})} className="border-4 rounded-md p-1 mx-2 text-sm"/><br/>

@@ -1,13 +1,13 @@
-import Link from 'next/link'
-import { useEffect } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { gql, useQuery } from '@apollo/client';
 
 interface ProgramModel {
-  id: string
-  name: string
-  description: string
-  teacherID: string
-}
+  id: string;
+  name: string;
+  description: string;
+  teacherID: string;
+};
 
 export function ProgramNameLink({programID, href, callback}: {programID: string, href: string, callback?: (p: ProgramModel) => any}) {
   const {data, loading} = useQuery<{program: ProgramModel}, {programID: string}>(
@@ -20,20 +20,20 @@ export function ProgramNameLink({programID, href, callback}: {programID: string,
   useEffect(() => {
     if (!programID) return
     if (!loading && !!data) callback && callback(data.program)
-  }, [programID, loading, callback, data])
+  }, [programID, loading]);
   return <Link href={href}>
     {loading || !data?'':data.program.name}
-  </Link>
-}
+  </Link>;
+};
 
 interface CourseModel {
-  id: string
-  name: string
-  description: string
-  semester: number
-  year: number
-  ploGroupID: string
-}
+  id: string;
+  name: string;
+  description: string;
+  semester: number;
+  year: number;
+  ploGroupID: string;
+};
 
 export function CourseNameLink({courseID, href}: {courseID: string, href: string}) {
   const {data, loading} = useQuery<{course: CourseModel}, {courseID: string}>(
@@ -41,8 +41,8 @@ export function CourseNameLink({courseID, href}: {courseID: string, href: string
       query CourseName($courseID: ID!) {
         course(courseID: $courseID) {
           name
-  }}`, {variables: {courseID}})
-  return <Link href={href}>
-    {loading || data?.course.name}
-  </Link>
+    }}`, {variables: {courseID}})
+    return <Link href={href}>
+      {loading || !data?'':data.course.name}
+    </Link>;
 };

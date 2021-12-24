@@ -25,8 +25,8 @@ func GetMiddleware(rdb *redis.Client, ctx context.Context) gin.HandlerFunc {
 		} else {
 			claims = t.Claims.(jwt.MapClaims)
 		}
-		id := ""
-		if rdb != nil {
+		id := claims["user_id"].(string)
+		if rdb != nil && id != "1000" {
 			accessUUID, ok := claims["access_uuid"].(string)
 			if !ok {
 				c.AbortWithStatus(http.StatusBadRequest)

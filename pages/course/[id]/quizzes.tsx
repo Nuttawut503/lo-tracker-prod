@@ -5,6 +5,7 @@ import { useState, Key, createContext, useContext } from 'react'
 import { getSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { Modal } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 import Collapse, { Panel } from 'rc-collapse'
 import { gql, useMutation } from '@apollo/client'
 import { ParsedUrlQuery } from 'querystring'
@@ -364,7 +365,7 @@ const CreateQuestionLinkForm: React.FC<{los: LOModel[], questionID: string, call
       resetForm()
       setSelectedLOID('')
       callback()
-    })
+    }).catch(_ => toast("Can not be added!", {type: 'error'}))
   }
   return <form onSubmit={handleSubmit((form) => submitForm(form))}>
     <span>Select LO:</span><br/>

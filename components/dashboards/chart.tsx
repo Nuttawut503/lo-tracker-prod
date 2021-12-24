@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
+import ClientOnly from '../ClientOnly';
 import * as d3 from "d3";
 import styled from 'styled-components';
 import jstat from 'jstat';
@@ -16,6 +17,9 @@ export default function Index() {
     <Head>
       <title>Dashboard</title>
     </Head>
+    <ClientOnly> 
+      {/* <ChartPage/>  */}
+    </ClientOnly>
   </div>);
 };
 
@@ -112,9 +116,8 @@ export function ChartBarAverage(props: { data: studentResult[], scoreType: strin
   let boxH = dimensions.h - dimensions.margin.bottom - dimensions.margin.top
 
   useEffect(() => {
-    if (!ref.current) return
     if (avgScore.length != 0) {
-      d3.selectAll("svg > *").remove()
+      d3.selectAll("svg > *").remove();
       const svgElement = d3.select(ref.current)
       let dataset = avgScore;
       //chart area
@@ -197,7 +200,7 @@ export function ChartBarAverage(props: { data: studentResult[], scoreType: strin
         tooltip.style('display', 'none')
       }
     }
-  }, [avgScore, boxH, boxW, scoreType, tableHead])
+  }, [avgScore])
 
   return <div >
     <div>
@@ -339,7 +342,7 @@ export function ChartLineAverage(props: { data: studentResult[], scoreType: stri
         tooltip.style('display', 'none')
       }
     }
-  }, [avgScore, boxH, boxW, scoreType, tableHead])
+  }, [avgScore])
 
   return <div >
     <div>
@@ -507,7 +510,7 @@ export function ChartBarAll(props: { data:studentResult[], scoreType: string, ta
         tooltipMain.style('display','none')
       }
     }
-  }, [allScore, boxH, boxW, scoreType, subgroupTemp])
+  }, [allScore])
 
   return <div /*style={{position: "absolute", right: "1%", width: "40%", height: "60%", marginTop: "0.5%"}}*/>
     <div>
@@ -668,7 +671,7 @@ export function ChartPieAverage(props: { data: studentResult[], scoreType: strin
         tooltip.style('display','none')
       }
     }
-  }, [avgScore, dimensions.h, dimensions.margin.left, dimensions.margin.top, dimensions.w, radius, scoreDomain, scoreType, totalScore])
+  }, [avgScore])
 
   return <div>
     <svg ref={ref}>
@@ -830,7 +833,7 @@ export function ChartBarAllScroll(props: { data: studentResult[], scoreType: str
         tooltipMain.style('display','none')
       }
     }
-  }, [allScore, boxH, scoreType, subgroupTemp])
+  }, [allScore])
 
   return <div /*style={{position: "absolute", right: "1%", width: "40%", height: "60%", marginTop: "0.5%"}}*/>
     <div style={{ "overflow": "scroll", "overflowY": "hidden" }} id="chartDiv">
@@ -997,7 +1000,7 @@ export function ChartBarAllVertical(props: { data:studentResult[], scoreType: st
         tooltipMain.style('display','none')
       }
     }
-  }, [allScore, dimensions.h, dimensions.margin.bottom, dimensions.margin.left, dimensions.margin.right, dimensions.margin.top, dimensions.w, scoreType, subgroupTemp])
+  }, [allScore])
 
   return <div /*style={{position: "absolute", right: "1%", width: "40%", height: "60%", marginTop: "0.5%"}}*/>
     <div>
@@ -1206,7 +1209,7 @@ export function ChartDistribute(props: { data: studentResult[], scoreType: strin
       }
 
     }
-  }, [newData, bisectX, boxH, boxW, mean, pct, scoreType, sd])
+  }, [newData])
 
   return <div >
     <div>
@@ -1368,7 +1371,7 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
         tooltip.style('display', 'none')
       }
     }
-  }, [stdScore, boxH, boxW, checkStart, scoreType, scores])
+  }, [stdScore])
 
   return <div >
     <div>

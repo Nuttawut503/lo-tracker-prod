@@ -39,7 +39,7 @@ export default function Page({ student, dashboard }: { student: StudentModel, da
     }
     setChart(chartData)
 
-  }, [ploDataType, chartData, plos])
+  }, [ploDataType])
 
   if (!isSignedIn) return null
   const noPermission = !isTeacher && !isSameUserID(student.id)
@@ -150,7 +150,7 @@ function LODashboard({ student, dashboard }: { student: StudentModel, dashboard:
     }
     setChart(chartData)
 
-  }, [course, chartData, courses])
+  }, [course])
   let LvlArray = []
   function resetLoLvl() { LvlArray = [] }
   function getLoName(id: string) {

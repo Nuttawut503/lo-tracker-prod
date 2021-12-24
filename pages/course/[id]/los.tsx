@@ -259,7 +259,7 @@ function CreateLOLink({ loID, ploGroupID, callback }: { loID: string, ploGroupID
       }).then(() => {
         setValue('ploID', '')
         callback()
-      })
+      }).catch(_ => toast("Can not be added!", {type: 'error'}))
     })}>
       <select {...register('ploID')} className="border-4 rounded-md p-1 mx-2 text-sm" defaultValue="">
         <option disabled value="">--Select PLO--</option>

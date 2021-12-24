@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import getConfig from "next/config"
 
 interface TokenFormat {
   username: string
@@ -12,14 +13,9 @@ interface TokenFormat {
   role_level: number
 }
 
-interface ErrorFormat {
-  error: string
-}
-
 export default NextAuth({
   providers: [
     Credentials({
-      name: "custom provider",
       credentials: {
         username: { label: "username", type: "text", placeholder: "username" },
         password: { label: "password", type: "password", placeholder: "password" },
@@ -27,15 +23,13 @@ export default NextAuth({
       async authorize(credentials) {
         const response = await fetch(process.env.AUTH_URL, {
           method: 'POST',
-          mode: 'cors',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({userid: credentials?.username, password: credentials?.password}),
         })
         if (!response.ok || response.status >= 400) {
-          const err: ErrorFormat = await response.json()
-          throw err.error
+          return null
         }
         const token: TokenFormat = await response.json()
         return {
@@ -45,11 +39,15 @@ export default NextAuth({
       }
     })
   ],
+  pages: {
+    signIn: "/login",
+  },
+  secret: 'PMVPDeJrpzZo6okHpluHf2zIJrvPMFTNLM0+8uLBu3o=',
   session: {
     strategy: 'jwt',
   },
   jwt: {
-    secret: 'jwt------secret',
+    secret: 'kp/u+NIQBdYlWLmKXbhEifwbgIfietfaf690rJM4nwA=',
   },
   callbacks: {
     async jwt({token, user}) {
