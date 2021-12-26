@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useContext } from 'react'
@@ -128,7 +128,7 @@ interface Params extends ParsedUrlQuery {
   id: string
 }
 
-export const getStaticProps: GetStaticProps<{ programID: string, ploGroups: PLOGroupModel[] }> = async (context) => {
+export const getServerSideProps: GetServerSideProps<{ programID: string, ploGroups: PLOGroupModel[] }> = async (context) => {
   try {
     const GET_PLOGROUPS = gql`
     query PLOGroups($programID: ID!) {
@@ -147,7 +147,6 @@ export const getStaticProps: GetStaticProps<{ programID: string, ploGroups: PLOG
         programID,
         ploGroups: data.ploGroups
       },
-      revalidate: 1,
     }
   } catch {
     return {
@@ -155,10 +154,8 @@ export const getStaticProps: GetStaticProps<{ programID: string, ploGroups: PLOG
         programID: undefined,
         ploGroups: []
       },
-      revalidate: 5,
     }
   }
 
 }
 
-export const getStaticPaths: GetStaticPaths = ProgramStaticPaths
