@@ -118,7 +118,7 @@ export const getStaticProps: GetStaticProps<{ programID: string, courses: Course
         programID,
         courses: data.courses,
       },
-      revalidate: 30,
+      revalidate: 5,
     }
   } catch {
     return {

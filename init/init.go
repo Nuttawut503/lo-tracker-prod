@@ -21,22 +21,22 @@ var teachers = []*Teacher{
 	{
 		ID:        "2001",
 		Email:     "tcher@example.com",
-		Name:      "Sample",
-		Surname:   "Teacher",
+		Name:      "Teacher",
+		Surname:   "Sample",
 		RoleLevel: 1,
 	},
 	{
 		ID:        "2002",
 		Email:     "pgmchair@example.com",
-		Name:      "Sample",
-		Surname:   "Program Chairperson",
+		Name:      "Program Chair",
+		Surname:   "Sample",
 		RoleLevel: 2,
 	},
 	{
 		ID:        "2003",
 		Email:     "dev@example.com",
-		Name:      "Sample",
-		Surname:   "Developer",
+		Name:      "Developer",
+		Surname:   "Sample",
 		RoleLevel: 3,
 	},
 }

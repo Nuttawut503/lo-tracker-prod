@@ -1228,8 +1228,7 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
   const scoreType = props.scoreType;
   const tableHead = props.tableHead;
   //Scoring
-  interface averageScore { name: number, score: number }
-  let datas = props.data; let dataLength = 0;
+  let datas = props.data;
   let scores: number[] = Array.from({length: 101}, () => 0);
   let stdScore: any[] = Array.from({length: 101}, (d,i) => ({name: i, score: 0}));
   let scoreTemp: any[] = Array.from({length: 101}, (d,i) => ({name: i, score: 0}));
@@ -1240,7 +1239,8 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
     for (let j = 0; j < datas[i].scores.length; j++) {
       currentScore += datas[i].scores[j] as number;
     }
-    let avgScore = parseInt((currentScore/dataCount).toFixed(0));
+    let avgScore = parseInt((currentScore/dataCount).toFixed(0))-1;
+    // if(avgScore === 100) avgScore = 99
     scoreTemp[avgScore].name = avgScore;
     scoreTemp[avgScore].score += 1;
     scores[avgScore] += 1;
@@ -1251,9 +1251,8 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
     if(scores[i] == 0 && checking) { checkStart += 1; }
     else { checking = false; }
   }
-
   stdScore = scoreTemp.slice(checkStart-1);
-
+  console.log("aasde0", stdScore)
   //Charting
   let boxW = dimensions.w - dimensions.margin.left - dimensions.margin.right
   let boxH = dimensions.h - dimensions.margin.bottom - dimensions.margin.top
@@ -1262,7 +1261,7 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
     if (stdScore.length != 0) {
       d3.selectAll("svg > *").remove();
       const svgElement = d3.select(ref.current)
-      let dataset = stdScore;
+      let dataset = stdScore.slice();
       const bisectData = d3.bisector(function(d: any) { return d.name; }).center
       //chart area
       svgElement.attr('width', dimensions.w).attr('height', dimensions.h)
@@ -1296,10 +1295,9 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
         .attr("fill", "#69b3a2")
         .attr("d", d3.line<any>()
           .curve(d3.curveBumpX)
-          .x(function(d) { return xScale(d.name) })
+          .x(function(d) { return xScale(d.name+1) })
           .y(function(d) { return yScale(d.score) })
-          )
-        // .on('mouseover', mOverEvent)
+        )
         
       box.append("rect")
         .attr("width", boxW)
@@ -1315,7 +1313,7 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
           .attr('x', 0)
           .attr('y', boxH + 45)
           .style('font-size', 9)
-          .text(`No student got score less than or equal to ${checkStart}`)
+          .text(`No student got score less than or equal to ${checkStart+1}`)
       }
         
       //Axis
@@ -1347,15 +1345,20 @@ export function ChartDensity(props: { data: studentResult[], scoreType: string, 
       
       function mMoveEvent(e: any) {
         d3.select(this).style('stroke-width', 3)
-        const x0 = xScale.invert(d3.pointer(e)[0]) ,
+        let x0: any, i: any, d0: any, d1: any, d: any
+        try{
+          x0 = xScale.invert(d3.pointer(e)[0]) ,
           i = bisectData(dataset, x0, 1),
-          d0 = dataset[i - 1].score,
-          d1 = dataset[i].score,
+          d0 = dataset[i - 2].score,
+          d1 = dataset[i - 1].score,
           d = x0 - d0 > d1 - x0 ? d1 : d0;
+        }catch{
+          d = 0
+        }
         //tooltip
         tooltip.select('.name')
           .html(
-            `<b>Score ${i+checkStart}</b> <br/> 
+            `<b>Score ${i+checkStart-1}</b> <br/> 
             ${d} student${d > 1 ? "s" : ""} got this score `
           )
         tooltip.style('display', 'block')

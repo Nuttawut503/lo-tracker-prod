@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { gql } from '@apollo/client'
 import { ParsedUrlQuery } from 'querystring'
 
-import { initializeApollo, addApolloState } from 'libs/apollo-client'
+import { initializeApollo } from 'libs/apollo-client'
 import { ChartBarPLO, ChartBarLO } from 'components/dashboards/plochart'
 import { AuthContext } from 'components/auth-wrapper'
 
@@ -17,8 +17,8 @@ export default function Page({ student, dashboard }: { student: StudentModel, da
   function handleType(e: any) { setPLOType(e.target.value) }
   const [chartData, setChart] = useState<studentResult>({ studentID: student.id, studentName: student.name, scores: [] })
   const [tableData, setData] = useState([])
-  let plos = dashboard.ploGroups.slice()
-  plos.sort((a, b) => a.name.localeCompare(b.name))
+  let plos: any[] = dashboard.ploGroups.slice()
+  plos.sort((a: any, b: any) => a.name.localeCompare(b.name))
 
   const ploRef = useRef(null)
   const loRef = useRef(null)
@@ -31,7 +31,8 @@ export default function Page({ student, dashboard }: { student: StudentModel, da
   }
   useEffect(() => {
     let targetPLOs = plos.find(e => e.name == ploDataType)
-    targetPLOs.plos.sort((a, b) => a.title.localeCompare(b.title))
+    targetPLOs.plos.sort((a: any, b: any) => a.title.localeCompare(b.title))
+
     setData(targetPLOs.plos.slice())
     chartData.scores = []
     for (let i = 0; i < targetPLOs.plos.length; i++) {
@@ -132,7 +133,8 @@ function LODashboard({ student, dashboard }: { student: StudentModel, dashboard:
   }
   useEffect(() => {
     let targetCourse = courses.find(e => e.name == course)
-    targetCourse.los.sort((a, b) => a.title.localeCompare(b.title))
+    targetCourse.los.sort((a: any, b: any) => a.title.localeCompare(b.title))
+    
     for (let i = 0; i < targetCourse.los.length; i++) {
       targetCourse.los[i].levels.sort((a: any, b: any) => {
         if (a.level < b.level) return -1

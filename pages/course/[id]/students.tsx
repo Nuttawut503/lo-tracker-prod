@@ -98,7 +98,7 @@ export const getStaticProps: GetStaticProps<{course: CourseModel, students: Stud
       course,
       students: studentsInCourse
     },
-    revalidate: 60,
+    revalidate: 5,
   }
   }catch{
     return {

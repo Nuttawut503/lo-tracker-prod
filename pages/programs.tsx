@@ -187,7 +187,7 @@ export const getStaticProps: GetStaticProps<{ programs: ProgramModel[] }> = asyn
       props: {
         programs: data.programs,
       },
-      revalidate: 60,
+      revalidate: 3,
     }
   } catch {
     return {

@@ -147,7 +147,7 @@ export const getStaticProps: GetStaticProps<{ programID: string, ploGroups: PLOG
         programID,
         ploGroups: data.ploGroups
       },
-      revalidate: 10,
+      revalidate: 1,
     }
   } catch {
     return {

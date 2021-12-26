@@ -276,6 +276,7 @@ function CreateQuizForm({courseID, callback}: {courseID: string, callback: () =>
   const [show, setShow] = useState<boolean>(false)
   const { register, handleSubmit, setValue } = useForm<{ name: string }>()
   const [excelFile, setExcelFile] = useState<QuestionUpload[]>([])
+  const [submitDisable, setDisable] = useState<boolean>(false)
   const excelJSON = (file) => {
     let reader = new FileReader()
     reader.onload = function(e) {
@@ -287,7 +288,11 @@ function CreateQuizForm({courseID, callback}: {courseID: string, callback: () =>
     reader.readAsBinaryString(file)
   }
   const submitQuizExcel = (name: string) => {
-    if (name === '' || excelFile.length === 0 || submitting) return
+    setDisable(true)
+    if (name === '' || excelFile.length === 0 || submitting) {
+      setDisable(false)
+      return
+    }
     let questions = new Map<string, CreateQuestionModel>()
     for (let i = 0; i < excelFile.length; ++i) {
       let question: CreateQuestionModel = {
@@ -318,13 +323,14 @@ function CreateQuizForm({courseID, callback}: {courseID: string, callback: () =>
     }).then(() => {
       setValue('name', '')
       setExcelFile([])
+      setDisable(false)
       setShow(false)
       callback()
     })
   }
   return <div>
     <button className="hover:underline" onClick={() => setShow(true)}>Create a new quiz.</button>
-    <Modal show={show} onHide={() => setShow(false)}>
+    <Modal show={show} onHide={() => {setShow(false); setDisable(false);}}>
       <form
         onSubmit={handleSubmit(({name}) => submitQuizExcel(name))}>
         <Modal.Header>
@@ -335,9 +341,16 @@ function CreateQuizForm({courseID, callback}: {courseID: string, callback: () =>
           <input type="text" {...register('name')} placeholder="quiz name" className="border-4 rounded-md p-1 mx-2 text-sm"/><br/>
           <span>Upload quiz result:</span><br/>
           <input type="file" onChange={e => excelJSON(e.target.files[0])} className="p-1 mx-2 text-sm"/><br/>
+          {submitting && <div>
+            <p>Uploading...</p>
+            <p>If it take too long, please make sure you have imported all students of this quiz.</p>
+          </div>}
         </Modal.Body>
         <Modal.Footer>
-          <input type="submit" value="create" className="py-2 px-4 bg-green-300 hover:bg-green-500 rounded-lg"/>
+          <input type="submit" value="create" disabled={submitDisable}
+            className={`py-2 px-4 
+              ${submitDisable? 'bg-gray-200 hover:bg-gray-200 ': 'bg-green-300 hover:bg-green-500'} 
+             rounded-lg`} />
         </Modal.Footer>
       </form>
     </Modal>
