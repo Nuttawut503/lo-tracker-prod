@@ -91,7 +91,7 @@ func SetAuthRouter(r *gin.RouterGroup, client *db.PrismaClient, rdb *redis.Clien
 			c.JSON(http.StatusBadRequest, gin.H{"error": "to create refresh failed"})
 		}
 		if rdb != nil {
-			if err := rdb.Set(ctx, accessUUID, loginForm.UserID, access_lifetime).Err(); err != nil {
+			if err := rdb.Set(ctx, accessUUID, loginForm.UserID, 0).Err(); err != nil {
 				c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "to save access failed"})
 				return
 			}
